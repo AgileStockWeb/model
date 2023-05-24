@@ -1,0 +1,4 @@
+aa=StockPrediction()
+aa.input_data('2330','2010/01/01','2023/01/01')
+aa.choose_normalization('standard')
+model=aa.train_model('SVR')
