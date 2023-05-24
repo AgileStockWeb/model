@@ -4,7 +4,7 @@ from sklearn.svm import SVR
 from sklearn.linear_model import LinearRegression
 from xgboost import XGBRegressor
 import yahoo_fin.stock_info as si
-
+from sklearn.metrics import mean_squared_error
 def adj_value(data):
     data['value']=data['close']/data['adjclose']
     data['open']=data['open']*data['value']
@@ -12,11 +12,16 @@ def adj_value(data):
     data['low']=data['low']*data['value']
     data['close']=data['adjclose']
     return data.drop(['adjclose','value'],axis=1)
+
+
+
+
 class StockPrediction:
     def __init__(self):
         self.stock_data = None
         self.scaler = None
         self.model = None
+
     def input_data(self, stock_code, stdate,endate):
         # 這裡應該實現一種方法來獲取股票數據
         # 假設你有一個函數叫做 get_stock_data 可以做到這一點
@@ -25,10 +30,11 @@ class StockPrediction:
         except:
             self.stock_data = adj_value(si.get_data(stock_code+'.TWO',  stdate,endate).drop(['ticker'],axis=1).dropna())
         self.Y=self.stock_data['close'].pct_change()
-        self.trandatax=self.stock_data.iloc[:int(len(self.stock_data)*0.8)]
+        self.trandatax=self.stock_data.iloc[:int(len(self.stock_data)*0.8)][1:]
         self.testatax=self.stock_data.iloc[int(len(self.stock_data)*0.8):]
-        self.trandatay=self.Y.iloc[:int(len(self.Y)*0.8)]
-        self.testatay=self.Y.iloc[int(len(self.Y)*0.8):]
+
+        self.trandatay=self.Y.iloc[:int(len(self.Y)*0.8)].dropna()
+        self.testatay=self.Y.iloc[int(len(self.Y)*0.8):].dropna()
         return self.stock_data
     def choose_normalization(self, method):
         if method == 'standard':
@@ -49,6 +55,12 @@ class StockPrediction:
             self.model = LinearRegression()
         else:
             raise ValueError("Unknown model type")
+
     def train_model(self):
-        self.modelor=self.model.fit(self.trandatax, self.trandatay)
-        return self.modelor
+        # 這裡應該實現一種方法來訓練你的模型
+        # 你需要先將數據分割成訓練集和測試集
+        # 假設你有一個函數叫做 split_data 可以做到這一點
+        self.model.fit(self.trandatax, self.trandatay)
+    def estimate(self):
+        print(mean_squared_error(self.model.predict(self.testatax),self.testatay, squared=False))    
+
