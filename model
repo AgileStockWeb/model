@@ -12,10 +12,6 @@ def adj_value(data):
     data['low']=data['low']*data['value']
     data['close']=data['adjclose']
     return data.drop(['adjclose','value'],axis=1)
-
-
-
-
 class StockPrediction:
     def __init__(self):
         self.stock_data = None
@@ -23,8 +19,6 @@ class StockPrediction:
         self.model = None
 
     def input_data(self, stock_code, stdate,endate):
-        # 這裡應該實現一種方法來獲取股票數據
-        # 假設你有一個函數叫做 get_stock_data 可以做到這一點
         try:
             self.stock_data = adj_value(si.get_data(stock_code+'.TW',  stdate,endate).drop(['ticker'],axis=1).dropna())
         except:
@@ -57,9 +51,6 @@ class StockPrediction:
             raise ValueError("Unknown model type")
 
     def train_model(self):
-        # 這裡應該實現一種方法來訓練你的模型
-        # 你需要先將數據分割成訓練集和測試集
-        # 假設你有一個函數叫做 split_data 可以做到這一點
         self.model.fit(self.trandatax, self.trandatay)
     def estimate(self):
         print(mean_squared_error(self.model.predict(self.testatax),self.testatay, squared=False))    
