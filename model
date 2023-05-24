@@ -1,0 +1,54 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.svm import SVR
+from sklearn.linear_model import LinearRegression
+from xgboost import XGBRegressor
+import yahoo_fin.stock_info as si
+
+def adj_value(data):
+    data['value']=data['close']/data['adjclose']
+    data['open']=data['open']*data['value']
+    data['high']=data['high']*data['value']
+    data['low']=data['low']*data['value']
+    data['close']=data['adjclose']
+    return data.drop(['adjclose','value'],axis=1)
+class StockPrediction:
+    def __init__(self):
+        self.stock_data = None
+        self.scaler = None
+        self.model = None
+    def input_data(self, stock_code, stdate,endate):
+        # 這裡應該實現一種方法來獲取股票數據
+        # 假設你有一個函數叫做 get_stock_data 可以做到這一點
+        try:
+            self.stock_data = adj_value(si.get_data(stock_code+'.TW',  stdate,endate).drop(['ticker'],axis=1).dropna())
+        except:
+            self.stock_data = adj_value(si.get_data(stock_code+'.TWO',  stdate,endate).drop(['ticker'],axis=1).dropna())
+        self.Y=self.stock_data['close'].pct_change()
+        self.trandatax=self.stock_data.iloc[:int(len(self.stock_data)*0.8)]
+        self.testatax=self.stock_data.iloc[int(len(self.stock_data)*0.8):]
+        self.trandatay=self.Y.iloc[:int(len(self.Y)*0.8)]
+        self.testatay=self.Y.iloc[int(len(self.Y)*0.8):]
+        return self.stock_data
+    def choose_normalization(self, method):
+        if method == 'standard':
+            self.scaler = StandardScaler()
+        elif method == 'min_max':
+            self.scaler = MinMaxScaler()
+        else:
+            raise ValueError("Unknown normalization method")
+        
+        self.trandatax = self.scaler.fit_transform(self.trandatax)
+        self.testatax = self.scaler.fit_transform(self.testatax)
+    def choose_model(self, model_type):
+        if model_type == 'XGB':
+            self.model = XGBRegressor()
+        elif model_type == 'SVR':
+            self.model = SVR()
+        elif model_type == 'LM':
+            self.model = LinearRegression()
+        else:
+            raise ValueError("Unknown model type")
+    def train_model(self):
+        self.modelor=self.model.fit(self.trandatax, self.trandatay)
+        return self.modelor
