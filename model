@@ -91,4 +91,4 @@ class StockPrediction:
         plt.subplots_adjust(bottom=0.15)
         plt.savefig('jpg/'+i+'.jpg')
         plt.show()
-
+        return i,'jpg/'+i+'.jpg'
