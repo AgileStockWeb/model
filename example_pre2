@@ -1,0 +1,2 @@
+aa=StockPrediction()
+aa.pre1(i,'0050','standard')
