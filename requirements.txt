@@ -1,0 +1,6 @@
+sklearn
+xgboost
+joblib
+yahoo_fin
+matplotlib
+pandas
