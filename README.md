@@ -25,18 +25,18 @@ aa.choose_model('SVR')
 5. 訓練模型：
 
 ```python
-model_path = aa.train_model('1')
+model_path = aa.train_model(id)
 ```
 
 6. 使用驗證方法 1 進行預測並生成圖形：
 
 ```python
-aa.pre('1', '0050', '2023/05/29', '2023/06/02', 'standard')
+aa.pre(id, '0050', '2023/05/29', '2023/06/02', 'standard')
 ```
 
 7. 使用驗證方法 2 進行預測：
 
 ```python
-predicted_price = aa.pre1('1', '0050', 'standard')
+predicted_price = aa.pre1(id, '0050', 'standard')
 ```
 
